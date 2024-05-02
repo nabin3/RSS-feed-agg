@@ -21,7 +21,7 @@ func (cfg *apiConfig) middlewareAuth(handler authHandler) http.HandlerFunc {
 
 		user, err := cfg.DB.GetUserByAPIKey(r.Context(), apiKey)
 		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "couldn't get user")
+			respondWithError(w, http.StatusBadRequest, "couldn't find user")
 			return
 		}
 

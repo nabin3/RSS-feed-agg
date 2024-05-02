@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -40,6 +41,9 @@ func main() {
 		DB: database.New(db),
 	}
 
+	// Adding our feed scraper
+	go cfg.StartScraping(6, 60*time.Second)
+
 	// Defining a router for our server
 	mux := http.NewServeMux()
 
@@ -49,14 +53,29 @@ func main() {
 	// "GET /v1/err" endpoint
 	mux.HandleFunc("GET /v1/err", handlerError)
 
-	// "POST v1/users" endoint
+	// "POST /v1/users" endoint
 	mux.HandleFunc("POST /v1/users", cfg.handlerCreateUsers)
 
-	// "GET v1/users" endoint
+	// "GET /v1/users" endoint
 	mux.HandleFunc("GET /v1/users", cfg.middlewareAuth(handlerGetUserByAPIKey))
 
-	// "POST v1/feeds" endoint
+	// "POST /v1/feeds" endoint
 	mux.HandleFunc("POST /v1/feeds", cfg.middlewareAuth(cfg.handlerCreateFeeds))
+
+	// "GET /v1/all-feeds" endpoint
+	mux.HandleFunc("GET /v1/all-feeds", cfg.handlerGetAllFeeds)
+
+	// "POST /v1/feed_follows" endpoint
+	mux.HandleFunc("POST /v1/feed_follows", cfg.middlewareAuth(cfg.handlerCreateFeedFollow))
+
+	// "DELETE /v1/feed_follows/{feedFollowID}" endpoint
+	mux.HandleFunc("DELETE /v1/feed_follows/{feedFollowID}", cfg.handlerDeleteFeedFollow)
+
+	// "GET /v1/feed_follows"
+	mux.HandleFunc("GET /v1/feed_follows", cfg.middlewareAuth(cfg.handlerGetAllFeedFollows))
+
+	// "GET /v1/posts/{limit}"
+	mux.HandleFunc("GET /v1/posts/{limit}", cfg.middlewareAuth(cfg.HandlerGetPosts))
 
 	// Setting appropriate access control headers
 	corsMux := middlewareCors(mux)

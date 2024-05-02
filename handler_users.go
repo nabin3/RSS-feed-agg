@@ -14,7 +14,7 @@ import (
 func (cfg *apiConfig) handlerCreateUsers(w http.ResponseWriter, r *http.Request) {
 	// Type for recieved data
 	type parameters struct {
-		Name string
+		Name string `json:"name"`
 	}
 
 	// Decoding recieved json data
@@ -46,22 +46,5 @@ func (cfg *apiConfig) handlerCreateUsers(w http.ResponseWriter, r *http.Request)
 
 // Handler for "GET /v1/USERS"
 func handlerGetUserByAPIKey(w http.ResponseWriter, r *http.Request, user database.User) {
-	/*	// Extracting api key from request header
-		apiKey, err := auth.GetAPIKey(r.Header)
-		if err != nil {
-			log.Printf("error in handlerGetUserByAPIKey at auth.GetAPIKey, details: %v", err)
-			respondWithError(w, http.StatusBadRequest, fmt.Sprintf("%v", err))
-			return
-		}
-	*/
-
-	/*// Rretrieveing a user by given apiKey
-	user, err := cfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		log.Printf("error in handlerGetUserByAPIKey at GetUserByAPIKey, details: %v", err)
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("%v", err))
-		return
-	}*/
-
 	respondWithJSON(w, http.StatusOK, databaseUserToUser(user))
 }
