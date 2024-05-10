@@ -31,6 +31,7 @@ go install github.com/pressly/goose/v3/cmd/goose@latest
 
 # Migrating database
 ```bash
+cd sql/schema/
 goose postgres postgres://username:password@localhost:database_port_number/database_name up
 ```
 
@@ -113,7 +114,7 @@ And the server starts to listen on mentioned port
 ## "GET /v1/all-feeds"
     nothing needed in body and header, GET method to this end-point will retrieve all feeds
 
-* "POST /v1/feed_follows"
+## "POST /v1/feed_follows"
     * header format: 
         ApiKey 35hk34k43k59879ffdsf.........
         need api_key
@@ -135,10 +136,10 @@ And the server starts to listen on mentioned port
 ## "DELETE /v1/feed_follows/{feedFollowID}"
         nothing needed in header, body. Just need a query parameter holding feedFollowID
 
-* "GET /v1/feed_follows"
+## "GET /v1/feed_follows"
     * header: 
         ApiKey gjsagj664871684...............
-        Need api_key only and this endpoint will serve feed_follows of the user whoos api_key was is included in header
+        Need api_key only and this endpoint will serve feed_follows of the user whoose api_key was is included in header
 
     * response format:
         [
