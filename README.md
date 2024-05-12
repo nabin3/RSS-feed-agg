@@ -8,13 +8,29 @@ It is a web server that allows clients to:
 RSS feeds are a way for websites to publish updates to their content. User can use this project to keep up with their favorite blogs, news sites, podcasts, and more!
 
 # How to deploy this aggregator in your local machine?
-## install [postgresql](postgresql.org)
+## install [docker](https://docs.docker.com/get-docker/), if you havn't already
+
+## install [golang](https://go.dev/doc/install)
 
 ## Copy this project
 
 ```bash
 git clone github.com/nabin3/RSS-feed-agg
 cd RSS-feed-agg
+```
+
+## Setup database
+```bash
+make postgresinit
+make createdb
+```
+## Installing goose to migrate database
+```bash
+go install github.com/pressly/goose/v3/cmd/goose@latest
+```
+## Migrate database
+```bash
+make migrateupdb
 ```
 
 ## Installing dependencies 
@@ -24,22 +40,11 @@ go get github.com/joho/godotenv@v1.5.1
 go get github.com/lib/pq@v1.10.9
 ```
 
-## Installing goose to migrate database
-```bash
-go install github.com/pressly/goose/v3/cmd/goose@latest
-```
-
-# Migrating database
-```bash
-cd sql/schema/
-goose postgres postgres://username:password@localhost:database_port_number/database_name up
-```
-
 ## Creating environement
-create .env file in root directory inside RSS-feed-agg. Now inside that file mention
-    * PORT number on which you want to set the server for listening 
-    * CONN, database connection string(protocol://database_username:password@localhost:database_port_number/database_name?ssl_mode=disable)
+create .env file in root directory inside RSS-feed-agg.
 
+    PORT="8080"
+    CONN="postgres://root:postgres@localhost:5434/blogator?sslmode=disable"
 
 ## Run
 ```bash
@@ -49,133 +54,177 @@ go build
 
 And the server starts to listen on mentioned port
 
-# Different endpoints of this aggregator server:
+# Different endpoints of this server:
 
-## "POST /v1/users" 
-    This endpoint is for creating a new user
+## /v1/users 
+This endpoint is for creating a new user
 
-    * body fromat:
-        {
-            "name": "xyz"
-        }
+    * Method: GET
+    * Request Content-Type: application/json
+    * Response Content-Type: application/json
     
-    * response fromat:
-        {
-            "id": "039750f0-c577-4134-8c45-32b327f332e2",
-            "created_at": "2024-04-17T15:17:19.527067Z",
-            "updated_at": "2024-04-17T15:17:19.527067Z",
-            "name": "xyz",
-            "api_key": "f17867af30cc295c80808b6fd47a9554e8a60b6643502756de701ba8e2b4d220"
-        }
-
-## "GET /v1/users"
-    This end point will provide details about an user, whose api_key will be provided
-
-    * body format:
-        there is no need to provide anything in request body
+Example Request:
+    {
+        "name": "Mr.X"
+    }
     
-    * header format:
-        in Auth at Bearer just give like this ApiKey  f17867af30cc295c80808b6fd47a9554e8a60b6643502756de701ba8e2b4d220
+Example Response:
+   {
+        "id": "66a959f0-efd5-4572-8e80-67a336e6b995",
+        "created_at": "2024-05-12T03:40:38.646767Z",
+        "updated_at": "2024-05-12T03:40:38.646767Z",
+        "name": "Mr.X",
+        "api_key": "dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498"
+    } 
+
+## /v1/users
+This end point will provide details about an user, whose api_key will be provided
+
+    * Method: GET
+    * Request Content-Type: empty
+    * Authorization: Bearer api_key 
+
+Example Authorization: Bearer
+    ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
+    (Note: Give "ApiKey" word before the key string in every request which requires authentication, it's mandetory)
     
-    * response format: 
+Example Response: 
+    {
+        "id": "66a959f0-efd5-4572-8e80-67a336e6b995",
+        "created_at": "2024-05-12T03:40:38.646767Z",
+        "updated_at": "2024-05-12T03:40:38.646767Z",
+        "name": "Mr.X",
+        "api_key": "dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498"        
+    }
+
+## /v1/feeds
+This endpoint is for adding a feed, whoose api_key will be provided and he will autmatically follow this given feed
+
+    * Method: POST
+    * Request Content-Type: application/json
+    * Response Content-Type: application/json
+    * Authorization: Bearer api_key 
+
+Example Authorization: Bearer
+    ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
+
+Example Request:
         {
-            "id": "039750f0-c577-4134-8c45-32b327f332e2",
-            "created_at": "2024-04-17T15:17:19.527067Z",
-            "updated_at": "2024-04-17T15:17:19.527067Z",
-            "name": "xyz",
-            "api_key": "f17867af30cc295c80808b6fd47a9554e8a60b6643502756de701ba8e2b4d220"
+            "name": "boot.dev blogs",
+            "url": "https://blog.boot.dev/index.xml"
         }
 
-## "POST /v1/feeds"
-    This endpoint is for adding a feed, whoose api_key will be provided he will autmatically follow this given feed
+Example Response:
+    {
+    "feed": {
+        "id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6",
+        "created_at": "2024-05-12T03:57:07.608693Z",
+        "updated_at": "2024-05-12T03:57:07.608693Z",
+        "name": "boot.dev blogs",
+        "url": "https://blog.boot.dev/index.xml",
+        "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995"
+    },
+    "feed_follow": {
+        "id": "c179f1f2-d4fb-443d-ab44-69058b703d94",
+        "created_at": "2024-05-12T03:57:07.608693Z",
+        "updated_at": "2024-05-12T03:57:07.608693Z",
+        "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995",
+        "feed_id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6"
+    }
+    }
 
-    * body format:
+## /v1/all-feeds
+This endpoint will fetch all feeds added by all users
+
+    * Method: GET
+    * Request Content-Type: empty
+    * Response Content-Type: application/json
+    * Authorization: empty
+
+Example Response:
+    [
         {
-            "name": "sunday_suspense",
-            "url": "https://radio_mirrchi.fm"
+            "id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6",
+            "created_at": "2024-05-12T03:57:07.608693Z",
+            "updated_at": "2024-05-12T04:00:59.420246Z",
+            "name": "boot.dev blogs",
+            "url": "https://blog.boot.dev/index.xml",
+            "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995"
         }
+    ]
 
-    * header format:
-        in Auth at Bearer just give like this ApiKey  f17867af30cc295c80808b6fd47a9554e8a60b6643502756de701ba8e2b4d220
 
-    * response format:
-        {
-            "feed": {
-                "id": "3bcd8c59-4762-4256-af4a-8d8030dc06e5",
-                "created_at": "2024-04-25T14:17:16.036641Z",
-                "updated_at": "2024-04-25T14:17:16.036641Z",
-                "name": "sunday_suspense",
-                "url": "https://radio_mirrchi.fm",
-                "user_id": "41e1ad3b-a5c1-4c41-80ff-28303d97ea0c"
-            },
-            "feed_follow": {
-                "id": "52c4e485-02e8-4dea-b28e-81b847ca9b69",
-                "created_at": "2024-04-25T14:17:16.036641Z",
-                "updated_at": "2024-04-25T14:17:16.036641Z",
-                "user_id": "41e1ad3b-a5c1-4c41-80ff-28303d97ea0c",
-                "feed_id": "3bcd8c59-4762-4256-af4a-8d8030dc06e5"
-            }
-        }
+## /v1/feed_follows
+This endpoint is for creating feed_follow, whose api_key will be provided that user will start to follow the feed, which id will be provided in request body
 
-## "GET /v1/all-feeds"
-    This endpoint will fetch all feeds added by all users
+    * Method: POST
+    * Request Content-Type: application/json
+    * Response Content-Type: application/json
+    * Authjorization: Bearer api_key
 
-    nothing needed in body and header, GET method to this end-point will retrieve all feeds
+Example Authorization: Bearer
+    ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
 
-## "POST /v1/feed_follows"
-    This endpoint is for creating feed_follow, whose api_key will be provided that user will start to follow the feed, whick id will be provided in request body
+Example Request:
+    {
+        "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
+    }
 
-    * header format: 
-        ApiKey 35hk34k43k59879ffdsf.........
-        need api_key
+Example Response:
+    {
+        "id": "e5e17051-14c9-4dbd-96db-9ccacef3f4e2",
+        "created_at": "2024-05-12T10:08:58.512671Z",
+        "updated_at": "2024-05-12T10:08:58.512671Z",
+        "user_id": "36723b49-9ae5-4937-8531-335aadd563fb",
+        "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
+    }    
 
-    * body format:
-        {
-            "feed_id": "7316015e-8a79-4b67-b961-452b4781c27e"
-        }
-
-    * response format:
-        {
-            "id": "6b2cca69-f4c9-4379-94f4-0c664de2ca24",
-            "created_at": "2024-04-25T16:01:59.405443Z",
-            "updated_at": "2024-04-25T16:01:59.405444Z",
-            "user_id": "48ea7dbc-56f4-4ba0-997c-a6f00fbe91e0",
-            "feed_id": "7316015e-8a79-4b67-b961-452b4781c27e"
-        }
-
-## "DELETE /v1/feed_follows/{feedFollowID}"
+## /v1/feed_follows/{feedFollowID}
    This endpoint is for deleting a feed_follow, by providing feed_follow id.
-   Nothing needed in header, body. Just need a query parameter holding feedFollowID
 
-## "GET /v1/feed_follows"
-    This endpoint is for retrieveing all feed_follows of a user whose api_key is provided
+    * Method: DELETE
+    * Request Content-Type: empty
+    * Response Content-Type: empty
+    * Authorization: empty
+    * Query parameter: Require feed_follow id
 
-    * header: 
-        ApiKey gjsagj664871684...............
-        Need api_key only and this endpoint will serve feed_follows of the user whoose api_key was is included in header
+## /v1/feed_follows
+This endpoint is for retrieveing all feed_follows of a user whose api_key is provided
 
-    * response format:
-        [
-            {
-                "id": "6b2cca69-f4c9-4379-94f4-0c664de2ca24",
-                "created_at": "2024-04-25T16:01:59.405443Z",
-                "updated_at": "2024-04-25T16:01:59.405444Z",
-                "user_id": "48ea7dbc-56f4-4ba0-997c-a6f00fbe91e0",
-                "feed_id": "7316015e-8a79-4b67-b961-452b4781c27e"
-            }
-        ]
+    * Method: GET
+    * Request Content-Type: empty
+    * Response Content-Type: application/json
+    * Authorization: Bearer api_key
+
+Example Authorization: Bearer
+    ApiKey  6f8c1d6fdeb5ab429e2bb537bb8f652018135afdc00edeee803889a6d0d7a3ea
+
+Example Response:
+[
+  {
+    "id": "e5e17051-14c9-4dbd-96db-9ccacef3f4e2",
+    "created_at": "2024-05-12T10:08:58.512671Z",
+    "updated_at": "2024-05-12T10:08:58.512671Z",
+    "user_id": "36723b49-9ae5-4937-8531-335aadd563fb",
+    "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
+  }
+] 
 
 ## "GET /v1/posts/{limit}
-    This endpoint will serve posts retrieved from a feed followed by a user whoose api_key is provided
+This endpoint will serve posts retrieved from a feed followed by a user whoose api_key is provided
 
-    * header:
-        ApiKey gjsagj664871684...............
-        Need api_key only and api key will serve all posts(latest posts first) in feeds followed by the user whose api_key is given     
-    
+    * Method: GET
+    * Request Content-Type: empty
+    * Response Content-Type: application/json
+    * Authorization: Bearer api_key
     * query parameter:
         If passed limit query parameter then endpoint will serve that number of posts and if no query parameter is given then endpoint will serve only 5 posts
 
-    * response format:
+
+Example Authorization: Bearer
+    ApiKey  6f8c1d6fdeb5ab429e2bb537bb8f652018135afdc00edeee803889a6d0d7a3ea
+
+Example Response:
         [
             {
                 "id": "a524805b-8378-43c3-9028-e27fc85d7b5b",
