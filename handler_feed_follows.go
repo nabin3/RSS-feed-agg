@@ -47,7 +47,7 @@ func (cfg *apiConfig) handlerCreateFeedFollow(w http.ResponseWriter, r *http.Req
 
 // Handler for "DELETE /v1/feed_follows/{feedFollowID}"
 func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request) {
-	// Extyractring query parameter
+	// Extractring query parameter
 	ID := r.PathValue("feedFollowID")
 
 	// Parsing FeedFollowID as UUID from feedFollowID query p[arameter which is a string

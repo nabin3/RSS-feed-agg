@@ -63,13 +63,13 @@ This endpoint is for creating a new user
     * Request Content-Type: application/json
     * Response Content-Type: application/json
     
-Example Request:
+    Example Request:
+        {
+            "name": "Mr.X"
+        }
+        
+    Example Response:
     {
-        "name": "Mr.X"
-    }
-    
-Example Response:
-   {
         "id": "66a959f0-efd5-4572-8e80-67a336e6b995",
         "created_at": "2024-05-12T03:40:38.646767Z",
         "updated_at": "2024-05-12T03:40:38.646767Z",
@@ -84,18 +84,18 @@ This end point will provide details about an user, whose api_key will be provide
     * Request Content-Type: empty
     * Authorization: Bearer api_key 
 
-Example Authorization: Bearer
-    ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
-    (Note: Give "ApiKey" word before the key string in every request which requires authentication, it's mandetory)
-    
-Example Response: 
-    {
-        "id": "66a959f0-efd5-4572-8e80-67a336e6b995",
-        "created_at": "2024-05-12T03:40:38.646767Z",
-        "updated_at": "2024-05-12T03:40:38.646767Z",
-        "name": "Mr.X",
-        "api_key": "dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498"        
-    }
+    Example Authorization: Bearer
+        ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
+        (Note: Give "ApiKey" word before the key string in every request which requires authentication, it's mandetory)
+        
+    Example Response: 
+        {
+            "id": "66a959f0-efd5-4572-8e80-67a336e6b995",
+            "created_at": "2024-05-12T03:40:38.646767Z",
+            "updated_at": "2024-05-12T03:40:38.646767Z",
+            "name": "Mr.X",
+            "api_key": "dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498"        
+        }
 
 ## /v1/feeds
 This endpoint is for adding a feed, whoose api_key will be provided and he will autmatically follow this given feed
@@ -105,33 +105,33 @@ This endpoint is for adding a feed, whoose api_key will be provided and he will 
     * Response Content-Type: application/json
     * Authorization: Bearer api_key 
 
-Example Authorization: Bearer
-    ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
+    Example Authorization: Bearer
+        ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
 
-Example Request:
+    Example Request:
+            {
+                "name": "boot.dev blogs",
+                "url": "https://blog.boot.dev/index.xml"
+            }
+
+    Example Response:
         {
+        "feed": {
+            "id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6",
+            "created_at": "2024-05-12T03:57:07.608693Z",
+            "updated_at": "2024-05-12T03:57:07.608693Z",
             "name": "boot.dev blogs",
-            "url": "https://blog.boot.dev/index.xml"
+            "url": "https://blog.boot.dev/index.xml",
+            "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995"
+        },
+        "feed_follow": {
+            "id": "c179f1f2-d4fb-443d-ab44-69058b703d94",
+            "created_at": "2024-05-12T03:57:07.608693Z",
+            "updated_at": "2024-05-12T03:57:07.608693Z",
+            "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995",
+            "feed_id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6"
         }
-
-Example Response:
-    {
-    "feed": {
-        "id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6",
-        "created_at": "2024-05-12T03:57:07.608693Z",
-        "updated_at": "2024-05-12T03:57:07.608693Z",
-        "name": "boot.dev blogs",
-        "url": "https://blog.boot.dev/index.xml",
-        "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995"
-    },
-    "feed_follow": {
-        "id": "c179f1f2-d4fb-443d-ab44-69058b703d94",
-        "created_at": "2024-05-12T03:57:07.608693Z",
-        "updated_at": "2024-05-12T03:57:07.608693Z",
-        "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995",
-        "feed_id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6"
-    }
-    }
+        }
 
 ## /v1/all-feeds
 This endpoint will fetch all feeds added by all users
@@ -141,17 +141,17 @@ This endpoint will fetch all feeds added by all users
     * Response Content-Type: application/json
     * Authorization: empty
 
-Example Response:
-    [
-        {
-            "id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6",
-            "created_at": "2024-05-12T03:57:07.608693Z",
-            "updated_at": "2024-05-12T04:00:59.420246Z",
-            "name": "boot.dev blogs",
-            "url": "https://blog.boot.dev/index.xml",
-            "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995"
-        }
-    ]
+    Example Response:
+        [
+            {
+                "id": "c8a6a42c-a571-441d-b1de-122f0fd6a4c6",
+                "created_at": "2024-05-12T03:57:07.608693Z",
+                "updated_at": "2024-05-12T04:00:59.420246Z",
+                "name": "boot.dev blogs",
+                "url": "https://blog.boot.dev/index.xml",
+                "user_id": "66a959f0-efd5-4572-8e80-67a336e6b995"
+            }
+        ]
 
 
 ## /v1/feed_follows
@@ -162,22 +162,22 @@ This endpoint is for creating feed_follow, whose api_key will be provided that u
     * Response Content-Type: application/json
     * Authjorization: Bearer api_key
 
-Example Authorization: Bearer
-    ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
+    Example Authorization: Bearer
+        ApiKey  dc71925beb7fb83060528594c96b671ca8486ea4be036e49cebfe08c3e7fd498
 
-Example Request:
-    {
-        "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
-    }
+    Example Request:
+        {
+            "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
+        }
 
-Example Response:
-    {
-        "id": "e5e17051-14c9-4dbd-96db-9ccacef3f4e2",
-        "created_at": "2024-05-12T10:08:58.512671Z",
-        "updated_at": "2024-05-12T10:08:58.512671Z",
-        "user_id": "36723b49-9ae5-4937-8531-335aadd563fb",
-        "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
-    }    
+    Example Response:
+        {
+            "id": "e5e17051-14c9-4dbd-96db-9ccacef3f4e2",
+            "created_at": "2024-05-12T10:08:58.512671Z",
+            "updated_at": "2024-05-12T10:08:58.512671Z",
+            "user_id": "36723b49-9ae5-4937-8531-335aadd563fb",
+            "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
+        }    
 
 ## /v1/feed_follows/{feedFollowID}
    This endpoint is for deleting a feed_follow, by providing feed_follow id.
@@ -196,19 +196,19 @@ This endpoint is for retrieveing all feed_follows of a user whose api_key is pro
     * Response Content-Type: application/json
     * Authorization: Bearer api_key
 
-Example Authorization: Bearer
-    ApiKey  6f8c1d6fdeb5ab429e2bb537bb8f652018135afdc00edeee803889a6d0d7a3ea
+    Example Authorization: Bearer
+        ApiKey  6f8c1d6fdeb5ab429e2bb537bb8f652018135afdc00edeee803889a6d0d7a3ea
 
-Example Response:
-[
-  {
-    "id": "e5e17051-14c9-4dbd-96db-9ccacef3f4e2",
-    "created_at": "2024-05-12T10:08:58.512671Z",
-    "updated_at": "2024-05-12T10:08:58.512671Z",
-    "user_id": "36723b49-9ae5-4937-8531-335aadd563fb",
-    "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
-  }
-] 
+    Example Response:
+    [
+        {
+            "id": "e5e17051-14c9-4dbd-96db-9ccacef3f4e2",
+            "created_at": "2024-05-12T10:08:58.512671Z",
+            "updated_at": "2024-05-12T10:08:58.512671Z",
+            "user_id": "36723b49-9ae5-4937-8531-335aadd563fb",
+            "feed_id": "60e01f39-26dc-4e4c-8276-a679e8263c49"
+        }
+    ] 
 
 ## "GET /v1/posts/{limit}
 This endpoint will serve posts retrieved from a feed followed by a user whoose api_key is provided
@@ -221,10 +221,10 @@ This endpoint will serve posts retrieved from a feed followed by a user whoose a
         If passed limit query parameter then endpoint will serve that number of posts and if no query parameter is given then endpoint will serve only 5 posts
 
 
-Example Authorization: Bearer
-    ApiKey  6f8c1d6fdeb5ab429e2bb537bb8f652018135afdc00edeee803889a6d0d7a3ea
+    Example Authorization: Bearer
+        ApiKey  6f8c1d6fdeb5ab429e2bb537bb8f652018135afdc00edeee803889a6d0d7a3ea
 
-Example Response:
+    Example Response:
         [
             {
                 "id": "a524805b-8378-43c3-9028-e27fc85d7b5b",
