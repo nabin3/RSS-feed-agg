@@ -21,6 +21,7 @@ cd RSS-feed-agg
 
 ## Setup database
 ```bash
+docker pull postgres:15-alpine
 make postgresinit
 make createdb
 ```
