@@ -55,6 +55,13 @@ And the server starts to listen on mentioned port
 
 # Different endpoints of this server:
 
+## /v1/readiness
+This endpoint is checking readiness of the server
+
+    * Method: GET
+    * Request Content-Type: empty
+    * Response Content-Type: application/json
+
 ## /v1/users 
 This endpoint is for creating a new user
 
@@ -183,7 +190,7 @@ This endpoint is for creating feed_follow, whose api_key will be provided that u
 
     * Method: DELETE
     * Request Content-Type: empty
-    * Response Content-Type: empty
+    * Response Content-Type: application/json
     * Authorization: empty
     * Query parameter: Require feed_follow id
 
